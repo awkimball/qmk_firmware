@@ -142,11 +142,18 @@ endif
 # We can assume a ChibiOS target When MCU_FAMILY is defined since it's
 # not used for LUFA
 ifdef MCU_FAMILY
-    FIRMWARE_FORMAT?=bin
     PLATFORM=CHIBIOS
-else ifdef ARM_ATSAM
-    PLATFORM=ARM_ATSAM
-    FIRMWARE_FORMAT=bin
+    FIRMWARE_FORMAT?=bin
+    ifeq ($(MCU_FAMILY),NRF51)
+        $(info "PLATFORM NRF5")
+        PLATFORM=NRF_SDK
+        FIRMWARE_FORMAT=hex
+    endif
+    ifeq ($(MCU_FAMILY),NRF52)
+        $(info "PLATFORM NRF5")
+        PLATFORM=NRF_SDK
+        FIRMWARE_FORMAT?=hex
+    endif
 else
     PLATFORM=AVR
     FIRMWARE_FORMAT?=hex
@@ -178,6 +185,9 @@ ifeq ($(PLATFORM),CHIBIOS)
     else ifneq ("$(wildcard $(TOP_DIR)/drivers/boards/$(BOARD)/bootloader_defs.h)","")
         OPT_DEFS += -include $(TOP_DIR)/drivers/boards/$(BOARD)/bootloader_defs.h
     endif
+endif
+ifeq ($(PLATFORM),NRF_SDK)
+    include $(TMK_PATH)/nrf.mk
 endif
 
 # Find all of the config.h files and add them to our CONFIG_H define.
@@ -298,6 +308,10 @@ ifeq ($(PLATFORM),CHIBIOS)
     include $(TMK_PATH)/protocol/chibios.mk
 endif
 
+ifeq ($(PLATFORM),NRF_SDK)
+    include $(TMK_PATH)/protocol/nrf.mk
+endif
+
 ifeq ($(strip $(VISUALIZER_ENABLE)), yes)
     VISUALIZER_DIR = $(QUANTUM_DIR)/visualizer
     VISUALIZER_PATH = $(QUANTUM_PATH)/visualizer
@@ -314,7 +328,7 @@ $(KEYMAP_OUTPUT)_DEFS := $(OPT_DEFS) $(GFXDEFS) \
 -DQMK_SUBPROJECT -DQMK_SUBPROJECT_H -DQMK_SUBPROJECT_CONFIG_H
 $(KEYMAP_OUTPUT)_INC :=  $(VPATH) $(EXTRAINCDIRS)
 $(KEYMAP_OUTPUT)_CONFIG := $(CONFIG_H)
-$(KEYBOARD_OUTPUT)_SRC := $(CHIBISRC) $(GFXSRC)
+$(KEYBOARD_OUTPUT)_SRC := $(CHIBISRC) $(GFXSRC) $(NRFSRC)
 $(KEYBOARD_OUTPUT)_DEFS := $(PROJECT_DEFS) $(GFXDEFS)
 $(KEYBOARD_OUTPUT)_INC := $(PROJECT_INC) $(GFXINC)
 $(KEYBOARD_OUTPUT)_CONFIG := $(PROJECT_CONFIG)

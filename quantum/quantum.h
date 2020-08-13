@@ -96,6 +96,10 @@ extern uint32_t default_layer_state;
     #include "process_leader.h"
 #endif
 
+#ifdef OLED_DRIVER_ENABLE
+#    include "oled_driver.h"
+#endif
+
 #ifdef UNICODE_ENABLE
     #include "process_unicode.h"
 #endif

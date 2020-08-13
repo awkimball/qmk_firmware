@@ -29,7 +29,7 @@
 #include <stdbool.h>
 #include "util.h"
 
-#if defined(PROTOCOL_CHIBIOS) || defined(PROTOCOL_ARM_ATSAM)
+#if defined(PROTOCOL_CHIBIOS) || defined(PROTOCOL_NRF)
 #define PSTR(x) x
 #endif
 
@@ -99,9 +99,10 @@ void print_set_sendchar(int8_t (*print_sendchar_func)(uint8_t));
 
 #  endif /* USER_PRINT / NORMAL PRINT */
 
-#elif defined(PROTOCOL_ARM_ATSAM) /* PROTOCOL_ARM_ATSAM */
+#elif defined(PROTOCOL_NRF)
 
-#  include "arm_atsam/printf.h"
+#  include "nrf/printf.h"
+#  include "nrf_log.h"
 
 #  ifdef USER_PRINT /* USER_PRINT */
 
@@ -111,19 +112,19 @@ void print_set_sendchar(int8_t (*print_sendchar_func)(uint8_t));
 #    define xprintf(fmt, ...)
 
 // Create user print defines
-#    define uprintf(fmt, ...)  __xprintf(fmt, ##__VA_ARGS__)
-#    define uprint(s)          xprintf(s)
-#    define uprintln(s)        xprintf(s "\r\n")
+#    define uprint(s)    tfp_printf(s)
+#    define uprintln(s)  tfp_printf(s "\r\n")
+#    define uprintf      tfp_printf
 
 #  else /* NORMAL PRINT */
 
 // Create user & normal print defines
-#    define xprintf(fmt, ...)  __xprintf(fmt, ##__VA_ARGS__)
-#    define print(s)           xprintf(s)
-#    define println(s)         xprintf(s "\r\n")
-#    define uprint(s)          print(s)
-#    define uprintln(s)        println(s)
-#    define uprintf(fmt, ...)  xprintf(fmt, ...)
+#    define print(s)     NRF_LOG_INFO(s)
+#    define println(s)   NRF_LOG_INFO(s "\r\n")
+#    define xprintf      NRF_LOG_INFO
+#    define uprint(s)    NRF_LOG_INFO(s)
+#    define uprintln(s)  NRF_LOG_INFO(s "\r\n")
+#    define uprintf      NRF_LOG_INFO
 
 #  endif /* USER_PRINT / NORMAL PRINT */
 
