@@ -34,7 +34,11 @@
 #ifndef MSCONF_H
 #define MSCONF_H
 
+<<<<<<< HEAD
 #define MSCONF_MAX_INPUT_LENGTH     (32)
+=======
+#define MSCONF_MAX_INPUT_LENGTH     (128)
+>>>>>>> dev/ble_micro_pro
 #define MSCONF_MAX_INPUT_ARGS       ((MSCONF_MAX_INPUT_LENGTH / 2) + 1)
 
 #if !defined(MSCONF_KEYMAP_SWAP_BS_DEL)

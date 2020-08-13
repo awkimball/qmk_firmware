@@ -24,6 +24,7 @@
 #
 
 # Imported source files and paths
+<<<<<<< HEAD
 ifeq ($(wildcard $(NRFSDK_ROOT)), "")
   $(error no nrf NRFSDK was found. Please set NRFNRFSDK_ROOT in your rules.mk)
 else
@@ -480,10 +481,30 @@ NRFSRC +=  $(NRFSDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(NRFSDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
   $(NRFSDK_ROOT)/components/ble/common/ble_conn_params.c \
   $(NRFSDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
+=======
+NRFSDK_VER = 15
+NRFCFLAGS += -DNRF_SDK_MAJOR_VER=$(NRFSDK_VER)
+NRFCFLAGS += -DMATRIX_ROWS=32
+NRFCFLAGS += -DMATRIX_COLS=32
+NRFCFLAGS += -DRGBLED_NUM=128
+NRFCFLAGS += -DEEPROM_SIZE=32
+
+NRF_VER_DIR = sdk$(NRFSDK_VER)
+
+COMMON_VPATH += $(DRIVER_PATH)/nrf52
+
+GIT_DESCRIBE = $(shell git describe --tags --long --dirty="\\*")
+CFLAGS += -DGIT_DESCRIBE=$(GIT_DESCRIBE)
+CFLAGS += -DTARGET=$(TARGET)
+
+ifeq ($(MCU_SERIES), NRF52840)
+  NRFSRC +=  $(TOP_DIR)/tmk_core/protocol/nrf/gcc_startup_nrf52840.S \
+>>>>>>> dev/ble_micro_pro
 
 endif
 
 ifeq ($(MCU_SERIES), NRF52832)
+<<<<<<< HEAD
 NRFLIBSRC += \
   $(NRFSDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
 
@@ -499,12 +520,19 @@ endif
   $(NRFSDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
   $(NRFSDK_ROOT)/components/boards/boards.c \
 
+=======
+  NRFSRC +=  $(TOP_DIR)/tmk_core/protocol/nrf/gcc_startup_nrf52.S \
+
+endif
+
+>>>>>>> dev/ble_micro_pro
 # Include folders common to all targets
 EXTRAINCDIRS += \
   $(TMK_PATH)/protocol/nrf \
   $(TMK_PATH)/protocol/nrf/$(NRF_VER_DIR) \
   $(TMK_PATH)/protocol/nrf/nrf52 \
   $(TMK_PATH)/protocol/chibios/lufa_utils \
+<<<<<<< HEAD
   $(NRFSDK_ROOT)/components/nfc/ndef/generic/message \
   $(NRFSDK_ROOT)/components/nfc/t2t_lib \
   $(NRFSDK_ROOT)/components/nfc/t4t_parser/hl_detection_procedure \
@@ -686,11 +714,16 @@ ifeq ($(strip $(NRF_SEPARATE)), slave)
   EXTNRFCFLAGS += -DNRF_SDH_BLE_GATT_MAX_MTU_SIZE=247
   EXTNRFCFLAGS += -DBLE_NUS_ENABLED=1
 endif
+=======
+>>>>>>> dev/ble_micro_pro
 
   NRFCFLAGS += -DAPP_USBD_VID=VENDOR_ID
   NRFCFLAGS += -DAPP_USBD_PID=PRODUCT_ID
   NRFCFLAGS += -DBOARD_CUSTOM
+<<<<<<< HEAD
 #  NRFCFLAGS += -DCONFIG_GPIO_AS_PINRESET
+=======
+>>>>>>> dev/ble_micro_pro
   NRFCFLAGS += -DCONFIG_NFCT_PINS_AS_GPIOS
   NRFCFLAGS += -DFLOAT_ABI_HARD
   NRFCFLAGS += -DSOFTDEVICE_PRESENT
@@ -714,6 +747,7 @@ ifeq ($(MCU_SERIES), NRF52840)
 endif
 ifeq ($(MCU_SERIES), NRF52832)
   NRFCFLAGS += -DNRF52832_XXAA
+<<<<<<< HEAD
   NRFCFLAGS += -DNRF_SD_BLE_API_VERSION=3
   NRFCFLAGS += -DS132
   NRFCFLAGS += -DCONFIG_GPIO_AS_PINRESET
@@ -742,6 +776,19 @@ ifeq ($(MCU_SERIES), NRF52832)
   ASFLAGS += -DNRF52_PAN_20
   ASFLAGS += -DNRF52_PAN_55
   ASFLAGS += -DNRF52_PAN_644
+=======
+  NRFCFLAGS += -DNRF_SD_BLE_API_VERSION=6
+  NRFCFLAGS += -DS132
+  ASMFLAGS += -DFLOAT_ABI_HARD
+  ASMFLAGS += -DNRF52
+  ASMFLAGS += -DNRF52832_XXAA
+  ASMFLAGS += -DNRF52_PAN_74
+  NRFCFLAGS += -DCONFIG_GPIO_AS_PINRESET
+  ASFLAGS += -DNRF52832_XXAA
+  ASFLAGS += -DNRF_SD_BLE_API_VERSION=6
+  ASFLAGS += -DS132
+  ASFLAGS += -DNRF52_PAN_74
+>>>>>>> dev/ble_micro_pro
 endif
 
   ASFLAGS += -mcpu=cortex-m4
@@ -759,7 +806,11 @@ endif
   ASMFLAGS += -D__STACK_SIZE=16384
 
   # Linker flags
+<<<<<<< HEAD
   LDFLAGS += -mthumb -mabi=aapcs -L$(NRFSDK_ROOT)/modules/nrfx/mdk -T$(LDSCRIPT)
+=======
+  LDFLAGS += -mthumb -mabi=aapcs -L$(TOP_DIR)/tmk_core/protocol/nrf -T$(LDSCRIPT)
+>>>>>>> dev/ble_micro_pro
   LDFLAGS += -mcpu=cortex-m4
   LDFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
   # let linker to dump unused sections
@@ -767,6 +818,7 @@ endif
   # use newlib in nano version
   LDFLAGS += --specs=nano.specs -lc -lnosys
 #  LDFLAGS += -L. $(NRFLIB)
+<<<<<<< HEAD
 endif
 
 ifeq ($(NRF_DEBUG), yes)
@@ -774,6 +826,8 @@ ifeq ($(NRF_DEBUG), yes)
 else
 	NRFLIB := $(NRFLIB).a
 endif
+=======
+>>>>>>> dev/ble_micro_pro
 
 # Project, sources and paths
 ##############################################################################
@@ -926,13 +980,21 @@ $(TARGET).ble.zip: $(TARGET).bin
 
 dfu_ble: $(TARGET).ble.zip
 
+<<<<<<< HEAD
 $(TARGET).zip: $(TARGET).bin
+=======
+zip: $(BUILD_DIR)/$(TARGET).bin
+>>>>>>> dev/ble_micro_pro
 	if ! type "nrfutil" > /dev/null 2>&1; then \
 		echo 'ERROR: nrfutil is not found'; exit 1;\
 	fi
 	$(NRFUTIL) pkg generate --debug-mode --hw-version 52 --sd-req 0xA9 --application $(TARGET).bin $(TARGET).zip
 
+<<<<<<< HEAD
 nrfutil: $(TARGET).zip
+=======
+nrfutil: zip
+>>>>>>> dev/ble_micro_pro
 	if $(GREP) -q -s Microsoft /proc/version; then \
 		echo 'ERROR: nrfutil cannot be automated within the Windows Subsystem for Linux (WSL) currently.'; \
 	else \
@@ -942,7 +1004,11 @@ nrfutil: $(TARGET).zip
 			sleep 0.5; \
 			printf "."; \
 			ls /dev/tty* > /tmp/2; \
+<<<<<<< HEAD
 			USB=`comm -13 /tmp/1 /tmp/2 | $(GREP) -o '/dev/tty.*'`; \
+=======
+			USB=`comm -13 /tmp/1 /tmp/2 | $(GREP) -o '/dev/tty.*' | head -n 1`; \
+>>>>>>> dev/ble_micro_pro
 			mv /tmp/2 /tmp/1; \
 		done; \
 		echo ""; \
@@ -953,12 +1019,21 @@ nrfutil: $(TARGET).zip
 		fi; \
 		sleep 1; \
 		echo "Programming Started"; \
+<<<<<<< HEAD
 		$(NRFUTIL) dfu usb_serial -pkg $(TARGET).zip -p $$USB; \
 	fi
 
 uf2: $(BUILD_DIR)/$(TARGET).bin
 	./util/uf2conv.py -f nrf52 -b 0x26000 -o $(TARGET).uf2 $(BUILD_DIR)/$(TARGET).bin -c
 	-./util/uf2conv.py -f nrf52 -b 0x26000 $(BUILD_DIR)/$(TARGET).bin
+=======
+		$(NRFUTIL) dfu usb-serial -pkg $(TARGET).zip -p $$USB; \
+	fi
+
+uf2: $(BUILD_DIR)/$(TARGET).bin
+	./util/uf2conv.py -f nrf52 -b 0x26000 -o $(TARGET).uf2 $(TARGET).bin -c
+	-./util/uf2conv.py -f nrf52 -b 0x26000 $(TARGET).bin
+>>>>>>> dev/ble_micro_pro
 
 elf: $(NRFLIB)
 

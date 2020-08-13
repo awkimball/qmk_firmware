@@ -1,4 +1,5 @@
 #include "bootloader.h"
+<<<<<<< HEAD
 #include "nrf.h"
 #include "nrf_power.h"
 
@@ -21,4 +22,9 @@ void bootloader_jump(void) {
 #else
 #error "Invalid nRF_SDK version."
 #endif
+=======
+
+__attribute__((weak))
+void bootloader_jump(void) {
+>>>>>>> dev/ble_micro_pro
 }

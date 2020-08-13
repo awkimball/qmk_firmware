@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "eeconfig.h"
 
 /*************************************/
@@ -550,11 +551,45 @@ static uint8_t buffer[EEPROM_SIZE];
 
 uint8_t eeprom_read_byte(const uint8_t *addr) {
 	uint32_t offset = (uint32_t)addr;
+=======
+/* Copyright 2017 Fred Sundvik
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "eeprom.h"
+
+static uint8_t buffer[EEPROM_SIZE];
+
+void eeprom_get_buffer_addr(uint8_t **buf, uint32_t *len) {
+    *buf = buffer;
+    *len = EEPROM_SIZE;
+}
+
+uint8_t eeprom_read_byte(const uint8_t *addr) {
+	uintptr_t offset = (uintptr_t)addr;
+    if (offset > EEPROM_SIZE) return 0;
+>>>>>>> dev/ble_micro_pro
 	return buffer[offset];
 }
 
 void eeprom_write_byte(uint8_t *addr, uint8_t value) {
+<<<<<<< HEAD
 	uint32_t offset = (uint32_t)addr;
+=======
+	uintptr_t offset = (uintptr_t)addr;
+>>>>>>> dev/ble_micro_pro
 	buffer[offset] = value;
 }
 
@@ -599,9 +634,12 @@ void eeprom_write_block(const void *buf, void *addr, uint32_t len) {
 	}
 }
 
+<<<<<<< HEAD
 #endif /* chip selection */
 // The update functions just calls write for now, but could probably be optimized
 
+=======
+>>>>>>> dev/ble_micro_pro
 void eeprom_update_byte(uint8_t *addr, uint8_t value) {
 	eeprom_write_byte(addr, value);
 }

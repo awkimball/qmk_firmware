@@ -1,7 +1,10 @@
 #ifndef TMK_CORE_PROTOCOL_NRF_APP_BLE_FUNC_H_
 #define TMK_CORE_PROTOCOL_NRF_APP_BLE_FUNC_H_
 
+<<<<<<< HEAD
 #include "nrf.h"
+=======
+>>>>>>> dev/ble_micro_pro
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -27,8 +30,11 @@ typedef struct {
   uint8_t checksum;
 } lp_mat_config_t;
 
+<<<<<<< HEAD
 __WEAK void ble_nus_packetrcv_handler(ble_switch_state_t* buf, uint8_t len);
 __WEAK void ble_nus_on_disconnect();
+=======
+>>>>>>> dev/ble_micro_pro
 
 uint32_t ble_nus_send_bytes(uint8_t* buf, uint16_t len);
 
@@ -44,19 +50,29 @@ void sleep_mode_enter();
 uint16_t get_vcc();
 
 #ifdef NRF_SEPARATE_KEYBOARD_SLAVE
+<<<<<<< HEAD
 #define get_ble_enabled() false
 #define set_ble_enabled(x)
 #define get_usb_enabled() false
 #define set_usb_enabled(x)
 #define select_ble()
 #define select_usb()
+=======
+#define get_ble_enabled()
+#define set_ble_enabled(x)
+#define get_usb_enabled()
+#define set_usb_enabled(x)
+>>>>>>> dev/ble_micro_pro
 #else
 bool get_ble_enabled();
 void set_ble_enabled(bool enabled);
 bool get_usb_enabled();
 void set_usb_enabled(bool enabled);
+<<<<<<< HEAD
 void select_ble();
 void select_usb();
+=======
+>>>>>>> dev/ble_micro_pro
 #endif
 
 #endif /* TMK_CORE_PROTOCOL_NRF_APP_BLE_FUNC_H_ */

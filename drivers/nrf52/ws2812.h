@@ -23,11 +23,12 @@
 #ifndef LIGHT_WS2812_H_
 #define LIGHT_WS2812_H_
 
-//#include "ws2812_config.h"
-//#include "i2cmaster.h"
 
 #include <stdint.h>
-#include "rgblight_types.h"
+#include "ws2812.h"
+#include "color.h"
+
+#include "apidef.h"
 
 
 /* User Interface
@@ -44,18 +45,11 @@
  */
 
 void ws2812_setleds     (LED_TYPE *ledarray, uint16_t number_of_leds);
-void ws2812_setleds_pin (LED_TYPE *ledarray, uint16_t number_of_leds,uint8_t pinmask);
+static inline void ws2812_setleds_pin (LED_TYPE *ledarray, uint16_t number_of_leds,uint8_t pinmask)
+{
+  BMPAPI->ws2812.setleds_pin((bmp_api_led_t*)ledarray, number_of_leds, BMPAPI->app.get_config()->led.pin); // ignore pinmask
+}
 void ws2812_setleds_rgbw(LED_TYPE *ledarray, uint16_t number_of_leds);
-
-/*
- * Old interface / Internal functions
- *
- * The functions take a byte-array and send to the data output as WS2812 bitstream.
- * The length is the number of bytes to send - three per LED.
- */
-
-void ws2812_sendarray     (uint8_t *array,uint16_t length);
-void ws2812_sendarray_mask(uint8_t *array,uint16_t length, uint8_t pinmask);
 
 
 /*

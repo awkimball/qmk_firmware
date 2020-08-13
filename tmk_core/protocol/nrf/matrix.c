@@ -16,6 +16,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
+<<<<<<< HEAD
+=======
+#include <stdlib.h>
+>>>>>>> dev/ble_micro_pro
 /*
  * scan matrix
  */
@@ -28,6 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "progmem.h"
 
+<<<<<<< HEAD
 #include "nrf.h"
 #include "nrf_gpio.h"
 #include "nrf_log.h"
@@ -118,6 +123,39 @@ void select_row(uint8_t row);
 matrix_row_t read_cols(void);
 matrix_row_t read_row(uint8_t row);
 #endif
+=======
+#include "app_ble_func.h"
+#include "configurator.h"
+
+#include "apidef.h"
+#include "i2c.h"
+#include "spi.h"
+#include "bmp_matrix.h"
+
+#include <stdbool.h>
+
+static uint8_t debouncing = 0;
+extern const uint8_t MAINTASK_INTERVAL;
+
+/* matrix state(1:on, 0:off) */
+_Static_assert(sizeof(matrix_row_t)==4, "Invalid row size");
+#define DEFAULT_MATRIX_ROWS 32
+static matrix_row_t matrix[DEFAULT_MATRIX_ROWS];
+static matrix_row_t matrix_dummy[DEFAULT_MATRIX_ROWS];
+static matrix_row_t matrix_debouncing[DEFAULT_MATRIX_ROWS];
+matrix_row_t matrix_row2col[DEFAULT_MATRIX_ROWS];
+
+static const bmp_matrix_func_t *matrix_func;
+extern const bmp_matrix_func_t matrix_func_row2col;
+extern const bmp_matrix_func_t matrix_func_col2row;
+extern const bmp_matrix_func_t matrix_func_row2col_lpme;
+extern const bmp_matrix_func_t matrix_func_col2row_lpme;
+extern const bmp_matrix_func_t matrix_func_row2col2row;
+extern const bmp_matrix_func_t matrix_func_col2row2col;
+
+extern int reset_counter;
+#define BOOTPIN 22
+>>>>>>> dev/ble_micro_pro
 
 __attribute__ ((weak))
 void matrix_init_quantum(void) {
@@ -150,12 +188,17 @@ void matrix_scan_user(void) {
 inline
 uint8_t matrix_rows(void)
 {
+<<<<<<< HEAD
     return MATRIX_ROWS;
+=======
+    return BMPAPI->app.get_config()->matrix.rows;
+>>>>>>> dev/ble_micro_pro
 }
 
 inline
 uint8_t matrix_cols(void)
 {
+<<<<<<< HEAD
     return MATRIX_COLS;
 }
 
@@ -173,10 +216,19 @@ void radio_event_callback(bool active){
     send_flag = false;
 #endif
   }
+=======
+    return BMPAPI->app.get_config()->matrix.cols;
+}
+
+__attribute__ ((weak))
+const bmp_matrix_func_t * get_matrix_func_user(void) {
+    return NULL;
+>>>>>>> dev/ble_micro_pro
 }
 
 void matrix_init(void) {
   // initialize row and col
+<<<<<<< HEAD
   init_rows();
 #if DIODE_DIRECTION == ROW2COL
   unselect_cols();
@@ -188,10 +240,46 @@ void matrix_init(void) {
 
 // initialize matrix state: all keys off
   for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+=======
+
+  matrix_func = get_matrix_func_user();
+
+  if (matrix_func == NULL)
+  {
+    switch (BMPAPI->app.get_config()->matrix.diode_direction)
+    {
+        case MATRIX_COL2ROW:
+            matrix_func = &matrix_func_col2row;
+            break;
+        case MATRIX_ROW2COL:
+            matrix_func = &matrix_func_row2col;
+            break;
+        case MATRIX_COL2ROW_LPME:
+            matrix_func = &matrix_func_col2row_lpme;
+            break;
+        case MATRIX_ROW2COL_LPME:
+            matrix_func = &matrix_func_row2col_lpme;
+            break;
+        case MATRIX_COL2ROW2COL:
+            matrix_func = &matrix_func_col2row2col;
+            break;
+        case MATRIX_ROW2COL2ROW:
+            matrix_func = &matrix_func_row2col2row;
+            break;
+        default:
+            matrix_func = &matrix_func_row2col;
+            break;
+    }
+  }
+
+  // initialize matrix state: all keys off
+  for (uint8_t i = 0; i < DEFAULT_MATRIX_ROWS; i++) {
+>>>>>>> dev/ble_micro_pro
     matrix[i] = 0;
     matrix_debouncing[i] = 0;
   }
 
+<<<<<<< HEAD
 #if defined(NRF_SEPARATE_KEYBOARD_MASTER) && defined(USE_I2C)
   i2c_init();
 #endif
@@ -215,10 +303,20 @@ static inline void set_received_key(ble_switch_state_t key, bool from_slave) {
   } else {
     matrix[row + matrix_offset] &= ~(1 << col);
   }
+=======
+  matrix_func->init();
+
+  matrix_init_quantum();
+
+#if defined(BMP_BOOTPIN_AS_RESET)
+  setPinInputHigh(BOOTPIN);
+#endif
+>>>>>>> dev/ble_micro_pro
 }
 
 __attribute__ ((weak))
 uint8_t matrix_scan_impl(matrix_row_t* _matrix){
+<<<<<<< HEAD
   uint8_t matrix_offset = isLeftHand ? 0 : MATRIX_ROWS-THIS_DEVICE_ROWS;
   volatile int matrix_changed = 0;
   ble_switch_state_t ble_switch_send[THIS_DEVICE_ROWS*THIS_DEVICE_COLS];
@@ -242,10 +340,24 @@ uint8_t matrix_scan_impl(matrix_row_t* _matrix){
   }
 #endif
 
+=======
+  const bmp_api_config_t *config = BMPAPI->app.get_config();
+  uint8_t matrix_offset = config->matrix.is_left_hand ? 0 :
+                                config->matrix.rows - matrix_func->get_device_row();
+  volatile int matrix_changed = 0;
+
+  if (matrix_func->scan(matrix_debouncing)) {
+    debouncing = config->matrix.debounce;
+  }
+
+  bmp_api_key_event_t key_state[16];
+  matrix_changed = 0;
+>>>>>>> dev/ble_micro_pro
   if (debouncing) {
     if (--debouncing) {
 //            wait_ms(1);
     } else {
+<<<<<<< HEAD
       for (uint8_t i = 0; i < THIS_DEVICE_ROWS; i++) {
         if (matrix_dummy[i + matrix_offset] != matrix_debouncing[i + matrix_offset]) {
           for (uint8_t j = 0; j < THIS_DEVICE_COLS; j++) {
@@ -257,10 +369,22 @@ uint8_t matrix_scan_impl(matrix_row_t* _matrix){
               ble_switch_send[matrix_changed+1].state = (matrix_debouncing[i
                   + matrix_offset] >> j) & 1;
               ble_switch_send[matrix_changed+1].id = i * MATRIX_COLS + j;
+=======
+      for (uint8_t i = 0; i < matrix_func->get_device_row(); i++) {
+        if (matrix_dummy[i + matrix_offset] != matrix_debouncing[i + matrix_offset]) {
+          for (uint8_t j = 0; j < matrix_func->get_device_col(); j++) {
+            if ((matrix_dummy[i + matrix_offset]
+                ^ matrix_debouncing[i + matrix_offset]) & (1 << j)) {
+              key_state[matrix_changed].row = i;
+              key_state[matrix_changed].col = j;
+              key_state[matrix_changed].state = (matrix_debouncing[i
+                  + matrix_offset] >> j) & 1;
+>>>>>>> dev/ble_micro_pro
               matrix_changed++;
             }
           }
         }
+<<<<<<< HEAD
 #if defined(NRF_SEPARATE_KEYBOARD_MASTER) || defined(NRF_SEPARATE_KEYBOARD_SLAVE)
         matrix_dummy[i + matrix_offset] = matrix_debouncing[i + matrix_offset];
 //        matrix[i + matrix_offset] = matrix_debouncing[i + matrix_offset]; Do not set matrix directory
@@ -268,10 +392,14 @@ uint8_t matrix_scan_impl(matrix_row_t* _matrix){
         matrix_dummy[i + matrix_offset] = matrix_debouncing[i + matrix_offset];
         matrix[i + matrix_offset] = matrix_debouncing[i + matrix_offset];
 #endif
+=======
+        matrix_dummy[i + matrix_offset] = matrix_debouncing[i + matrix_offset];
+>>>>>>> dev/ble_micro_pro
       }
     }
   }
 
+<<<<<<< HEAD
 #if defined(NRF_SEPARATE_KEYBOARD_MASTER)
   for (int i=0; i<matrix_changed; i++) {
     push_queue(&delay_keys_queue, ble_switch_send[i+1]);
@@ -420,6 +548,29 @@ uint8_t matrix_scan_impl(matrix_row_t* _matrix){
     }
   }
   return 1;
+=======
+  for (int i=0; i<matrix_changed; i++) {
+    BMPAPI->app.push_keystate_change(&key_state[i]);
+  }
+
+  uint32_t pop_cnt =
+      BMPAPI->app.pop_keystate_change(key_state,
+          sizeof(key_state)/sizeof(key_state[0]),
+          config->param_central.max_interval/MAINTASK_INTERVAL + 3);
+
+  for (uint32_t i=0; i<pop_cnt; i++) {
+    if (key_state[i].state == 0)
+    {
+      _matrix[key_state[i].row] &= ~(1 << key_state[i].col);
+    }
+    else
+    {
+      _matrix[key_state[i].row] |= (1 << key_state[i].col);
+    }
+  }
+
+  return pop_cnt;
+>>>>>>> dev/ble_micro_pro
 }
 
 char str[16];
@@ -428,6 +579,17 @@ uint8_t matrix_scan(void)
 {
   uint8_t res = matrix_scan_impl(matrix);
   matrix_scan_quantum();
+<<<<<<< HEAD
+=======
+
+#if defined(BMP_BOOTPIN_AS_RESET)
+  if (readPin(BOOTPIN) == 0 && reset_counter < 0)
+  {
+    reset_counter = 10;
+  }
+#endif
+
+>>>>>>> dev/ble_micro_pro
   return res;
 }
 
@@ -447,6 +609,7 @@ void matrix_print(void)
 {
 }
 
+<<<<<<< HEAD
 static void init_rows() {
 #if DIODE_DIRECTION == ROW2COL
   for(int i=0; i<THIS_DEVICE_ROWS; i++) {
@@ -601,3 +764,5 @@ void ble_nus_packetrcv_handler(ble_switch_state_t* buf, uint8_t len) {
     push_queue(&rcv_keys_queue, buf[i]);
   }
 }
+=======
+>>>>>>> dev/ble_micro_pro

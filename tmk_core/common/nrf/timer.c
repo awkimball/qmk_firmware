@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "nrf.h"
 #include "timer.h"
 #include "nrf_log.h"
@@ -9,21 +10,30 @@
 #else
   #define TIMER_TICKS(s, pre) APP_TIMER_TICKS(s, pre)
 #endif
+=======
+#include "timer.h"
+>>>>>>> dev/ble_micro_pro
 
 #define TICK_INTERVAL 10
 /* Mill second tick count */
 volatile uint32_t timer_count = 0;
 
+<<<<<<< HEAD
 APP_TIMER_DEF(one_ms_ticker_id);                          /**< 1ms timer. */
 
+=======
+>>>>>>> dev/ble_micro_pro
 void timer_tick(uint8_t interval) {
   timer_count += interval;
 }
 /* Timer interrupt handler */
 void ticker(void* context)  {
+<<<<<<< HEAD
     timer_count+=TICK_INTERVAL;
     app_timer_create(&one_ms_ticker_id, APP_TIMER_MODE_SINGLE_SHOT, ticker);
     app_timer_start(one_ms_ticker_id, TIMER_TICKS(TICK_INTERVAL, 0), NULL);
+=======
+>>>>>>> dev/ble_micro_pro
 }
 
 /* Timer Initialize
@@ -32,9 +42,12 @@ void ticker(void* context)  {
  */
 void timer_init(void)
 {
+<<<<<<< HEAD
   uint32_t err_code = app_timer_create(&one_ms_ticker_id, APP_TIMER_MODE_SINGLE_SHOT, ticker);
 //  err_code = app_timer_start(one_ms_ticker_id, TIMER_TICKS(TICK_INTERVAL, 0), NULL);
   APP_ERROR_CHECK(err_code);
+=======
+>>>>>>> dev/ble_micro_pro
 }
 
 void timer_clear(void)

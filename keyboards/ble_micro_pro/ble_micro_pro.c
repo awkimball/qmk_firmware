@@ -1,74 +1,62 @@
+/* Copyright 2019 sekigon-gonnoc
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+#include "ble_micro_pro.h"
+#include <string.h>
 
-#include "config.h"
-#include "quantum.h"
-
-#include "ble_conn_state.h"
-#include "nrf_gpio.h"
-
-void matrix_init_kb() {
-  nrf_gpio_cfg_output(LED_PIN);
-  BLE_LED_OFF();
+void keyboard_post_init_user()
+{
+    debug_enable = false;
 }
 
-static uint32_t led_pattern = 0;
+void create_user_file()
+{
+  static const char qmk_configurator[] = "<meta http-equiv=\"refresh\" content=\"0;URL=\'https://sekigon-gonnoc.github.io/qmk_configurator\'\"/>";
+  BMPAPI->usb.create_file("MAP_EDITHTM", (uint8_t*)qmk_configurator, strlen(qmk_configurator));
+}
+// Optional override functions below.
+// You can leave any or all of these undefined.
+// These are only required if you want to perform custom actions.
 
-bool set_led_pattern(uint32_t pattern) {
-  if (led_pattern != pattern) {
-    led_pattern = pattern;
-    return true;
-  }
+/*
 
-  return false;
+void matrix_init_kb(void) {
+  // put your keyboard start-up code here
+  // runs once when the firmware starts up
+
+  matrix_init_user();
 }
 
-static void led_pattern0(uint32_t base_time);
-static void led_pattern1(uint32_t base_time);
-
-void (*led_patterns[])(uint32_t base_time) = {led_pattern0, led_pattern1};
-
-void matrix_scan_kb() {
-  static uint32_t base_time = 0;
-  bool pattern_change;
-
-  if (ble_conn_state_central_conn_count() > 0) {
-    pattern_change = set_led_pattern(1);
-  } else {
-    pattern_change = set_led_pattern(0);
-  }
-
-  if (pattern_change) {
-    base_time = timer_read32();
-  }
-
-  if (led_pattern < sizeof(led_patterns) / sizeof(led_patterns[0])) {
-    led_patterns[led_pattern](base_time);
-  } else {
-    led_pattern0(base_time);
-  }
+void matrix_scan_kb(void) {
+  // put your looping keyboard code here
+  // runs every cycle (a lot)
 
   matrix_scan_user();
 }
 
-static void led_pattern0(uint32_t base_time) {
-  const uint32_t period = 3000;
-  uint32_t time = timer_elapsed32(base_time) % period;
+bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
+  // put your per-action keyboard code here
+  // runs for every action, just before processing by the firmware
 
-  if (time > 0 && time < 50) {
-    BLE_LED_ON();
-  } else if (time > 150 && time < 200) {
-    BLE_LED_ON();
-  } else {
-    BLE_LED_OFF();
-  }
+  return process_record_user(keycode, record);
 }
 
-static void led_pattern1(uint32_t base_time) {
-  const uint32_t period = 3000;
-  uint32_t time = timer_elapsed32(base_time) % period;
+void led_set_kb(uint8_t usb_led) {
+  // put your keyboard LED indicator (ex: Caps Lock LED) toggling code here
 
-  if (time > 0 && time < 100) {
-    BLE_LED_ON();
-  } else {
-    BLE_LED_OFF();
-  }
+  led_set_user(usb_led);
 }
+
+*/
